@@ -9,7 +9,7 @@ public class MyPlaneDesktop {
 		cfg.title = "aojgame-myplane";
 		cfg.useGL20 = false;
 		cfg.width = 480;
-		cfg.height = 320;
+		cfg.height = 800;
 		
 		new LwjglApplication(new MyPlane(), cfg);
 	}
