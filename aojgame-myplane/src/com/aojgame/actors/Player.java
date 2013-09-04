@@ -1,5 +1,6 @@
 package com.aojgame.actors;
 
+import com.aojgame.myplane.Art;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,23 +21,17 @@ public class Player extends Actor{
 	private int 	bombs;
 	
 	public Player(){
-		animation 	= null;
+		animation 	= Art.animation_player;
 		bombs		= 0;
 		
 		setName("Player");
-		setHeight(0);
-		setWidth(0);
+		setHeight(100);
+		setWidth(120);
 		setPosition((Gdx.graphics.getWidth()-getWidth()) / 2, 0);
-		
-		addListener(new InputListener(){
-			public void touchDragged (InputEvent event, float x, float y, int pointer) {
-				setPosition(x, y);
-			}
-		});
 	}
 	public void draw (SpriteBatch batch, float parentAlpha) {
 		stateTime += Gdx.graphics.getDeltaTime();
-		batch.draw(animation.getKeyFrame(stateTime), getX(), getY() );
+		batch.draw(animation.getKeyFrame(stateTime, true), getX(), getY() );
 		
 		if ( bombs >= 0 ){
 			//draw bombs
@@ -60,9 +55,9 @@ public class Player extends Actor{
 					isDead = true;
 					break;
 				}
-				if (armay.crash(x, y, width, height)){
-					armay.beShooted();
-				}
+//				if (armay.crash(x, y, width, height)){
+//					armay.beShooted();
+//				}
 			}
 			else if (actor.getName().equals("Bombs")){
 				
