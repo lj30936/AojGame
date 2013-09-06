@@ -1,45 +1,82 @@
 package com.aojgame.actors;
 
+import com.aojgame.myplane.Art;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 
 public class Bullet extends Actor{
 
+	private static final float	BLUE_TIME		= 15;
 	private static final float	BULLET_WIDTH 	= 5;
 	private static final float 	BULLET_HEIGHT 	= 10;
-	private static final float 	speed			= 10;
+	private static final float	BULLET_SPEED	= 1500;
+	private static final float	DELTA_X			= 30;
+	
 	private boolean isDouble;
+	private float	blueTime;
+	private Player			player;
 	
-	private MoveToAction action;
-	
-	public Bullet(float x, float y) {
-		isDouble = false;
+	public Bullet(Player player) {
+		isDouble 	= false;
+		this.player = player;
 		
-		setPosition(x, y);
+		setX(player.getX() + player.getWidth() / 2);
+		setY(player.getY() + player.getHeight()) ;
 		
-		action		= new MoveToAction();
-		action.setDuration( Gdx.graphics.getHeight() / speed );
-		action.setPosition(getX(), 0-getHeight());
+		setWidth(BULLET_WIDTH);
+		setHeight(BULLET_HEIGHT);
+
+	}
+	public void act (float delta) {
+		setY(getY() + BULLET_SPEED * delta );
 		
-		addAction(action);
+		if (isDouble){
+			blueTime += Gdx.graphics.getDeltaTime();
+			if (blueTime > BLUE_TIME){
+				isDouble = false;
+				reShoot();
+			}
+		}
+		if (getY() >= Gdx.graphics.getHeight())
+			reShoot();
 	}
 	public void draw (SpriteBatch batch, float parentAlpha) {
 		if (isDouble){
-			batch.draw(blue, getX(), getY(), getWidth(), getHeight());
-			batch.draw(blue, getX(), getY(), getWidth(), getHeight());
+			batch.draw(Art.bullet_bule, getX(), getY());
+			batch.draw(Art.bullet_bule, getX() + 2*DELTA_X, getY());
 		}
 		else{
-			batch.draw(red, getX(), getY(), getWidth(), getHeight());
+			batch.draw(Art.bullet_red, getX() - getWidth() / 2, getY());
 		}
 	}
-	
+	public boolean Hit(Enemy enemy){
+		if (isDouble && (enemy.crash(getX(), getY(), getWidth(), getHeight())
+					||enemy.crash(getX() + 2*DELTA_X,getY(), getWidth(), getHeight()))){
+				reShoot();
+				enemy.beShooted();
+				return true;
+		}
+		if ( !isDouble && enemy.crash(getX(), getY(), getWidth(), getHeight())){
+			reShoot();
+			enemy.beShooted();
+			return true;
+		}
+		return false;
+	}
 	public void upgrade(){
+		blueTime = 0;
 		isDouble = true;
-		setPosition(x, y);
-		
-		action.setPosition(getX(), 0-getHeight());
-		action.restart();
+		reShoot();
+	}
+	public void reShoot(){
+		if (isDouble){
+			setX(player.getX() + player.getWidth() / 2 - DELTA_X);
+			setY(player.getY() + player.getHeight() ) ;
+		}
+		else {
+			setX(player.getX() + player.getWidth() / 2 );
+			setY(player.getY() + player.getHeight() ) ;
+		}
 	}
 }

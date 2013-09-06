@@ -1,5 +1,8 @@
 package com.aojgame.screen;
 
+import java.util.ArrayList;
+
+import com.aojgame.actors.Enemy;
 import com.aojgame.actors.Player;
 import com.aojgame.myplane.Art;
 import com.badlogic.gdx.Gdx;
@@ -7,28 +10,45 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class GameScreen implements Screen, InputProcessor {
 
-	private static int BACKGROUND_MOVE = 3;
+	private static int 	BACKGROUND_MOVE 	= 1;
+	private static int 	MAX_ENEMY		= 20;
+	private static float GEN_ENEMY_TIME	= 1f;
+	private Stage				stage;
+	private Player 				player;
+	private Image				background;
+	private ImageButton			btn_pause;
+	private ArrayList<Enemy> 	enemies;
 	
-	private Stage	stage;
-	private Player player;
-	private Image	background;
-	
+	private	float	level;
 	private int 	background_Y;
-	
-	private int	preX ;
-	private int	preY ;
-	
+	private int		preX ;
+	private int		preY ;
+	private float		countTime = 0;
 	@Override
 	public void render(float delta) {
+
 	    Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-	    background_Y -= BACKGROUND_MOVE;
-	    if (background_Y <= -Art.backgroud.getRegionHeight())
-	    	background_Y = 0;
+
+		background_Y -= BACKGROUND_MOVE;
+		if (background_Y <= -Art.backgroud.getRegionHeight())
+		    background_Y = 0;
+		
+		countTime += delta;
+		
+		while (countTime * level > GEN_ENEMY_TIME){
+			genEnemy();
+			countTime -= GEN_ENEMY_TIME;
+		}
+		stage.act();
 		stage.draw();
 	}
 
@@ -40,6 +60,23 @@ public class GameScreen implements Screen, InputProcessor {
 
 	@Override
 	public void show() {
+		level		= 1;
+		
+		btn_pause	= new ImageButton(new TextureRegionDrawable(Art.gamePause), 
+										new TextureRegionDrawable(Art.gamePausePressed));
+		btn_pause.setPosition(10,Gdx.graphics.getHeight() - 50);
+		btn_pause.addListener(new InputListener(){
+			public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+
+				super.touchUp(event, x, y, pointer, button);
+			}
+			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+				return true;
+			}
+		});
+		
+		enemies		= new ArrayList<Enemy>();
+		
 		background = new Image(Art.backgroud){
 			public void draw (SpriteBatch batch, float parentAlpha) {
 				setPosition(0, background_Y);
@@ -54,11 +91,29 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		stage.addActor(background);
 		stage.addActor(player);
+		stage.addActor(btn_pause);
 		
 		Gdx.input.setInputProcessor(this);
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 	}
 
+	public void genEnemy() {
+		int len = enemies.size();
+		for (int i = 0; i < len ; i++){
+			Enemy enemy = enemies.get(i);
+			if (!enemy.isVisible()){
+				enemy.reSet(level);
+				return;
+			}
+		}
+		if (len == MAX_ENEMY)
+			return;
+		
+		Enemy enemy = new Enemy(level);
+		enemies.add(enemy);
+		stage.addActor(enemy);
+	}
+	
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub

@@ -17,7 +17,7 @@ public class LoadingScreen implements Screen{
 	
 	private int			width;
 	private int			height;
-	private float			statetime;
+	private float		statetime;
 	private boolean		init;
 	
 	private MyPlane			game;

@@ -3,6 +3,7 @@ package com.aojgame.myplane;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -23,16 +24,32 @@ public class Art {
 	//飞机
 	public static TextureRegion[]	player;
 	public static Animation		animation_player;
-	
-	//返回按钮
+	public static TextureRegion[]	player_down;
+	public static Animation		animation_player_down;
+	public static TextureRegion[] enemy1;
+	public static TextureRegion[] enemy2;
+	public static TextureRegion[] enemy3;
+	public static Animation[]		animation_enemy;
+	public static TextureRegion[] enemy1_down;
+	public static TextureRegion[] enemy2_down;
+	public static TextureRegion[] enemy3_down;
+	public static Animation[]		animation_enemy_down;
+	//子弹
+	public static TextureRegion		bullet_red;
+	public static TextureRegion		bullet_bule;
+	//炸弹
+	public static TextureRegion		bomb;
+	//按钮
 	public static TextureRegion 	btn_goback;
+	public static TextureRegion		gamePause;
+	public static TextureRegion		gamePausePressed;
 	//Loading动画
 	public static TextureRegion[]	gameLoading;
 	public static Animation 		animation_gameLoading;
 	//字体
 	public static BitmapFont		font;
 	//资源加载器
-	private static AssetManager	assetManager;
+	private static AssetManager		assetManager;
 	//是否加载完成
 	public static boolean			isLoaded;
 	
@@ -85,6 +102,8 @@ public class Art {
 			copyright		= textureAtlas_background.createSprite("shoot_copyright");
 			//字体
 			font 			= assetManager.get("data/ui/font.fnt", BitmapFont.class);
+			font.setColor(Color.BLACK);
+			
 			//返回按钮
 			btn_goback		= new TextureRegion(textureAtlas_background.createSprite("btn_finish"));
 			
@@ -93,8 +112,61 @@ public class Art {
 			player[0]		= textureAtlas_planes.createSprite("hero1");
 			player[1]		= textureAtlas_planes.createSprite("hero2");
 			animation_player= new Animation(0.3f, player);
+			player_down		= new TextureRegion[4];
+			player_down[0]	= textureAtlas_planes.createSprite("hero_blowup_n1");
+			player_down[1]	= textureAtlas_planes.createSprite("hero_blowup_n2");
+			player_down[2]	= textureAtlas_planes.createSprite("hero_blowup_n3");
+			player_down[3]	= textureAtlas_planes.createSprite("hero_blowup_n4");
+			animation_player_down = new Animation(0.3f, player_down);
 			
 			//敌方飞机
+			enemy1			= new TextureRegion[1];
+			enemy2			= new TextureRegion[1];
+			enemy3			= new TextureRegion[2];
+			enemy1[0]		= textureAtlas_planes.createSprite("enemy1");
+			enemy2[0]		= textureAtlas_planes.createSprite("enemy2");
+			enemy3[0]		= textureAtlas_planes.createSprite("enemy3_n1");
+			enemy3[1]		= textureAtlas_planes.createSprite("enemy3_n2");
+			animation_enemy = new Animation[3];
+			animation_enemy[0] = new Animation(0.3f, enemy1);
+			animation_enemy[1] = new Animation(0.3f, enemy2);
+			animation_enemy[2] = new Animation(0.3f, enemy3);
+			
+			enemy1_down		= new TextureRegion[4];
+			enemy2_down		= new TextureRegion[4];
+			enemy3_down		= new TextureRegion[6];
+			enemy1_down[0]	= textureAtlas_planes.createSprite("enemy1_down1");
+			enemy1_down[1]	= textureAtlas_planes.createSprite("enemy1_down2");
+			enemy1_down[2]	= textureAtlas_planes.createSprite("enemy1_down3");
+			enemy1_down[3]	= textureAtlas_planes.createSprite("enemy1_down4");
+
+			enemy2_down[0]	= textureAtlas_planes.createSprite("enemy2_down1");
+			enemy2_down[1]	= textureAtlas_planes.createSprite("enemy2_down2");
+			enemy2_down[2]	= textureAtlas_planes.createSprite("enemy2_down3");
+			enemy2_down[3]	= textureAtlas_planes.createSprite("enemy2_down4");
+			
+			enemy3_down[0]	= textureAtlas_planes.createSprite("enemy3_down1");
+			enemy3_down[1]	= textureAtlas_planes.createSprite("enemy3_down2");
+			enemy3_down[2]	= textureAtlas_planes.createSprite("enemy3_down3");
+			enemy3_down[3]	= textureAtlas_planes.createSprite("enemy3_down4");
+			enemy3_down[4]	= textureAtlas_planes.createSprite("enemy3_down5");
+			enemy3_down[5]	= textureAtlas_planes.createSprite("enemy3_down6");
+			
+			animation_enemy_down = new Animation[3];
+			animation_enemy_down[0]	= new Animation(0.1f, enemy1_down);
+			animation_enemy_down[1]	= new Animation(0.1f, enemy2_down);
+			animation_enemy_down[2]	= new Animation(0.1f, enemy3_down);
+			
+			//暂停按钮
+			gamePause		= textureAtlas_planes.createSprite("game_pause_nor");
+			gamePausePressed= textureAtlas_planes.createSprite("game_pause_pressed");
+			
+			//炸弹
+			bomb			= textureAtlas_planes.createSprite("bomb");
+			
+			//子弹
+			bullet_red		= textureAtlas_planes.createSprite("bullet1");
+			bullet_bule		= textureAtlas_planes.createSprite("bullet2");
 			
 			isLoaded = true;
 		}
