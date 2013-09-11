@@ -51,15 +51,16 @@ public class Bullet extends Actor{
 		}
 	}
 	public boolean Hit(Enemy enemy){
-		if (isDouble && (enemy.crash(getX(), getY(), getWidth(), getHeight())
-					||enemy.crash(getX() + 2*DELTA_X,getY(), getWidth(), getHeight()))){
+		if (isDouble && 
+				(crash(enemy.getX(), getY(), enemy.getWidth(), enemy.getHeight())
+					|| crash(enemy.getX() - 2*DELTA_X,enemy.getY(), enemy.getWidth(), enemy.getHeight()))){
 				reShoot();
-				enemy.beShooted();
+				enemy.beShooted(1);
 				return true;
 		}
-		if ( !isDouble && enemy.crash(getX(), getY(), getWidth(), getHeight())){
+		if ( !isDouble && crash(enemy.getX(), enemy.getY(), enemy.getWidth(), enemy.getHeight())){
 			reShoot();
-			enemy.beShooted();
+			enemy.beShooted(1);
 			return true;
 		}
 		return false;
@@ -78,5 +79,9 @@ public class Bullet extends Actor{
 			setX(player.getX() + player.getWidth() / 2 );
 			setY(player.getY() + player.getHeight() ) ;
 		}
+	}
+	private boolean crash (float x, float y, float width, float height) {
+		return !(getX() > x + width || getX() + getWidth() < x || 
+				getY() > y + height || getY() + getHeight() < y);
 	}
 }

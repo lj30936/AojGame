@@ -34,6 +34,9 @@ public class Art {
 	public static TextureRegion[] enemy2_down;
 	public static TextureRegion[] enemy3_down;
 	public static Animation[]		animation_enemy_down;
+	//UFO
+	public static TextureRegion		UFO_BULLET;
+	public static TextureRegion		UFO_BOMB;
 	//×Óµ¯
 	public static TextureRegion		bullet_red;
 	public static TextureRegion		bullet_bule;
@@ -167,6 +170,10 @@ public class Art {
 			//×Óµ¯
 			bullet_red		= textureAtlas_planes.createSprite("bullet1");
 			bullet_bule		= textureAtlas_planes.createSprite("bullet2");
+			
+			//UFO
+			UFO_BULLET		= textureAtlas_planes.createSprite("ufo1");
+			UFO_BOMB		= textureAtlas_planes.createSprite("ufo2");
 			
 			isLoaded = true;
 		}

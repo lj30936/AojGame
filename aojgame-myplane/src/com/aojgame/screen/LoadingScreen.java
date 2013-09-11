@@ -13,6 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+/**
+ * Loading界面，显示载入动画和首页
+ * @author aojgame.com
+ *
+ */
 public class LoadingScreen implements Screen{
 	
 	private int			width;

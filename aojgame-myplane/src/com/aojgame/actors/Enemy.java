@@ -57,18 +57,13 @@ public class Enemy extends Actor{
 		return type;
 	}
 	
-	public void beShooted(){
-		HP--;
-		if (HP == 0) {
+	public void beShooted(int cnt){
+		HP -= cnt;
+		if (HP <= 0) {
 			animation 	= Art.animation_enemy_down[type];
 			stateTime	= 0;
 		}
 	}
-	public boolean crash (float x, float y, float width, float height) {
-		return !(getX() > x + width || getX() + getWidth() < x || 
-				getY() > y + height || getY() + getHeight() < y);
-	}
-	
 	public void reSet(float level){
 		type 		= TYPE_SMALL;
 		

@@ -2,6 +2,7 @@ package com.aojgame.screen;
 
 import java.util.ArrayList;
 
+import com.aojgame.actors.Bonus;
 import com.aojgame.actors.Enemy;
 import com.aojgame.actors.Player;
 import com.aojgame.myplane.Art;
@@ -10,43 +11,66 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-
+/**
+ * 
+ * @author aojgame
+ *
+ */
 public class GameScreen implements Screen, InputProcessor {
 
-	private static int 	BACKGROUND_MOVE 	= 1;
-	private static int 	MAX_ENEMY		= 20;
-	private static float GEN_ENEMY_TIME	= 1f;
+	private static final int 	BACKGROUND_MOVE 	= 1;
+	private static final int 	MAX_ENEMY		= 20;
+	private static final float 	GEN_ENEMY_TIME	= 1f;
+	private static final float	GEN_BONUS_TIME	= 20f;
+	
 	private Stage				stage;
 	private Player 				player;
+	private Bonus				bonus;
 	private Image				background;
 	private ImageButton			btn_pause;
 	private ArrayList<Enemy> 	enemies;
 	
-	private	float	level;
-	private int 	background_Y;
+	private	float		level;
+	private int 		background_Y;
 	private int		preX ;
 	private int		preY ;
 	private float		countTime = 0;
+	private float		bonusTime = 0;
+	private float		lastInputTime	= 0;
+	private	float		nowInputTime	= 0;
+	
 	@Override
 	public void render(float delta) {
 
 	    Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
+	    if (player.isOver())
+	    	Gdx.app.exit();
+	    
 		background_Y -= BACKGROUND_MOVE;
 		if (background_Y <= -Art.backgroud.getRegionHeight())
 		    background_Y = 0;
 		
 		countTime += delta;
+		bonusTime += delta;
+		nowInputTime += delta;
 		
-		while (countTime * level > GEN_ENEMY_TIME){
+		while (countTime  * level * MathUtils.random(0.8f, 1.2f)
+				> GEN_ENEMY_TIME){
 			genEnemy();
 			countTime -= GEN_ENEMY_TIME;
+		}
+		if (bonusTime * level * MathUtils.random(0.8f, 1.2f)
+				> GEN_BONUS_TIME){
+			bonus.reSet();
+			bonusTime -= GEN_BONUS_TIME;
 		}
 		stage.act();
 		stage.draw();
@@ -60,7 +84,7 @@ public class GameScreen implements Screen, InputProcessor {
 
 	@Override
 	public void show() {
-		level		= 1;
+		level		= 1f;
 		
 		btn_pause	= new ImageButton(new TextureRegionDrawable(Art.gamePause), 
 										new TextureRegionDrawable(Art.gamePausePressed));
@@ -86,11 +110,16 @@ public class GameScreen implements Screen, InputProcessor {
 			}
 		};
 		
+		bonus 	= new Bonus();
+		bonus.setVisible(false);
+		
 		stage 	= new Stage();
 		player 	= new Player();
 		
+		
 		stage.addActor(background);
 		stage.addActor(player);
+		stage.addActor(bonus);
 		stage.addActor(btn_pause);
 		
 		Gdx.input.setInputProcessor(this);
@@ -160,7 +189,13 @@ public class GameScreen implements Screen, InputProcessor {
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		preX = screenX;
 		preY = screenY;
-		System.out.println("touch " + (preX) + "   "+ (preY) );
+		
+		if(nowInputTime - lastInputTime < 0.8f){
+			//player.useBomb();
+			nowInputTime = 0;
+		}
+		lastInputTime = nowInputTime;
+		//System.out.println("touch " + (preX) + "   "+ (preY) );
 		return false;
 	}
 
