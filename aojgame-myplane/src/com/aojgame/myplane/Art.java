@@ -2,7 +2,6 @@ package com.aojgame.myplane;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -10,7 +9,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 /**
  * 资源类，异步加载，加载完成后直接调用
- * @author aojgame
+ * 素材采用apk包中提取出来的pack文件和png文件，原装无修改
+ * @author aojgame.com
  *
  */
 public class Art {
@@ -21,19 +21,27 @@ public class Art {
 	//背景
 	public static TextureRegion 	backgroud;
 	public static TextureRegion 	copyright;
-	//飞机
+	//玩家飞机
 	public static TextureRegion[]	player;
 	public static Animation		animation_player;
+	//玩家飞机爆炸
 	public static TextureRegion[]	player_down;
 	public static Animation		animation_player_down;
+	//敌方飞机
 	public static TextureRegion[] enemy1;
 	public static TextureRegion[] enemy2;
 	public static TextureRegion[] enemy3;
 	public static Animation[]		animation_enemy;
+	//击中动画
+	public static TextureRegion 	enemy2_hit;
+	public static TextureRegion	enemy3_hit;
+	public static Animation[]		animation_enemy_hit;
+	//爆炸动画
 	public static TextureRegion[] enemy1_down;
 	public static TextureRegion[] enemy2_down;
 	public static TextureRegion[] enemy3_down;
 	public static Animation[]		animation_enemy_down;
+
 	//UFO
 	public static TextureRegion		UFO_BULLET;
 	public static TextureRegion		UFO_BOMB;
@@ -43,14 +51,14 @@ public class Art {
 	//炸弹
 	public static TextureRegion		bomb;
 	//按钮
-	public static TextureRegion 	btn_goback;
+	public static TextureRegion 		btn_goback;
 	public static TextureRegion		gamePause;
 	public static TextureRegion		gamePausePressed;
 	//Loading动画
-	public static TextureRegion[]	gameLoading;
-	public static Animation 		animation_gameLoading;
+	public static TextureRegion[]		gameLoading;
+	public static Animation 			animation_gameLoading;
 	//字体
-	public static BitmapFont		font;
+	public static BitmapFont			font;
 	//资源加载器
 	private static AssetManager		assetManager;
 	//是否加载完成
@@ -85,7 +93,8 @@ public class Art {
 	public static void load(){
 		
 		assetManager.load("data/shoot.pack", TextureAtlas.class);
-		assetManager.load("data/sound/game_music.mp3",Music.class);
+		//声音文件在data包里有，暂没写到程序去，请自行完善
+//		assetManager.load("data/sound/game_music.mp3",Music.class);
 		assetManager.load("data/ui/font.fnt", BitmapFont.class);
 
 	}
@@ -135,6 +144,15 @@ public class Art {
 			animation_enemy[1] = new Animation(0.3f, enemy2);
 			animation_enemy[2] = new Animation(0.3f, enemy3);
 			
+			//敌方飞机被击中动画
+			enemy2_hit		= textureAtlas_planes.createSprite("enemy2_hit");
+			enemy3_hit		= textureAtlas_planes.createSprite("enemy3_hit");
+			animation_enemy_hit 	= new Animation[3];
+			animation_enemy_hit[0] 	= new Animation(0.3f, enemy1);
+			animation_enemy_hit[1] 	= new Animation(0.3f, enemy2[0], enemy2_hit);
+			animation_enemy_hit[2] 	= new Animation(0.3f, enemy3[0], enemy3[1], enemy3_hit);
+			
+			//敌方飞机爆炸动画
 			enemy1_down		= new TextureRegion[4];
 			enemy2_down		= new TextureRegion[4];
 			enemy3_down		= new TextureRegion[6];

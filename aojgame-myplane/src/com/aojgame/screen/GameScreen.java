@@ -19,30 +19,43 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 /**
- * 
- * @author aojgame
+ * 游戏界面，包含一个stage，多个actor
+ * 监听拖动，双击等input事件
+ * @author aojgame.com
  *
  */
 public class GameScreen implements Screen, InputProcessor {
 
-	private static final int 	BACKGROUND_MOVE 	= 1;
+	//背景移动速度
+	private static final int 	BACKGROUND_MOVE_SPEED 	= 1;
+	//最大敌机数量
 	private static final int 	MAX_ENEMY		= 20;
+	//敌机产生基准时间
 	private static final float 	GEN_ENEMY_TIME	= 1f;
-	private static final float	GEN_BONUS_TIME	= 20f;
+	//奖励出现基准时间
+	private static final float	GEN_BONUS_TIME	= 10f;
 	
 	private Stage				stage;
 	private Player 				player;
 	private Bonus				bonus;
 	private Image				background;
+	//暂停按钮
 	private ImageButton			btn_pause;
 	private ArrayList<Enemy> 	enemies;
 	
+	private boolean	paused = false;
+	//当前等级，等级越高出现大飞机概率越大，速度越快
 	private	float		level;
+	//背景移动，当前Y坐标
 	private int 		background_Y;
+	//上一次input的XY坐标
 	private int		preX ;
 	private int		preY ;
+	//敌方飞机生成计时器
 	private float		countTime = 0;
+	//奖励出现计时器
 	private float		bonusTime = 0;
+	//双击检测，上次单击事件和当前单击事件
 	private float		lastInputTime	= 0;
 	private	float		nowInputTime	= 0;
 	
@@ -51,16 +64,23 @@ public class GameScreen implements Screen, InputProcessor {
 
 	    Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
+	    //暂停的时候inputtime需要增加，以判断是否双击
+	    nowInputTime += delta;
+		
 	    if (player.isOver())
 	    	Gdx.app.exit();
 	    
-		background_Y -= BACKGROUND_MOVE;
+	    if (paused){
+	    	stage.draw();
+	    	return;
+	    }
+	    
+		bonusTime += delta;
+		countTime += delta;
+		
+		background_Y -= BACKGROUND_MOVE_SPEED;
 		if (background_Y <= -Art.backgroud.getRegionHeight())
 		    background_Y = 0;
-		
-		countTime += delta;
-		bonusTime += delta;
-		nowInputTime += delta;
 		
 		while (countTime  * level * MathUtils.random(0.8f, 1.2f)
 				> GEN_ENEMY_TIME){
@@ -72,6 +92,8 @@ public class GameScreen implements Screen, InputProcessor {
 			bonus.reSet();
 			bonusTime -= GEN_BONUS_TIME;
 		}
+		//level基准为1，根据得分上浮
+		level = 1f + 0.001f * player.getScore();
 		stage.act();
 		stage.draw();
 	}
@@ -88,10 +110,11 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		btn_pause	= new ImageButton(new TextureRegionDrawable(Art.gamePause), 
 										new TextureRegionDrawable(Art.gamePausePressed));
+		btn_pause.setSize(50, 50);
 		btn_pause.setPosition(10,Gdx.graphics.getHeight() - 50);
 		btn_pause.addListener(new InputListener(){
 			public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-
+				paused = !paused;
 				super.touchUp(event, x, y, pointer, button);
 			}
 			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -101,6 +124,7 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		enemies		= new ArrayList<Enemy>();
 		
+		//两张背景图连接一起滚动，实现背景滚动
 		background = new Image(Art.backgroud){
 			public void draw (SpriteBatch batch, float parentAlpha) {
 				setPosition(0, background_Y);
@@ -126,6 +150,10 @@ public class GameScreen implements Screen, InputProcessor {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 	}
 
+	/**
+	 * 产生一个新的敌机，尽量从回收的资源里重置
+	 * 而不是new出来
+	 */
 	public void genEnemy() {
 		int len = enemies.size();
 		for (int i = 0; i < len ; i++){
@@ -135,7 +163,7 @@ public class GameScreen implements Screen, InputProcessor {
 				return;
 			}
 		}
-		if (len == MAX_ENEMY)
+		if (len >= MAX_ENEMY)
 			return;
 		
 		Enemy enemy = new Enemy(level);
@@ -187,11 +215,14 @@ public class GameScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		//先把事件传递给暂停按钮
+		stage.touchDown(screenX, screenY, pointer, button);
+		
 		preX = screenX;
 		preY = screenY;
-		
-		if(nowInputTime - lastInputTime < 0.8f){
-			//player.useBomb();
+		//双击判定
+		if(nowInputTime - lastInputTime < 0.5f){
+			player.useBomb();
 			nowInputTime = 0;
 		}
 		lastInputTime = nowInputTime;
@@ -201,16 +232,26 @@ public class GameScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
+		stage.touchUp(screenX, screenY, pointer, button);
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		System.out.println("dragg " + preX + "," + preY + "   "+
-				screenX  + "   "+ screenY + "  " + pointer);
+
+		//屏幕拖动手势，玩家飞机按照拖动路径移动
 		player.setX(player.getX() + screenX - preX);
 		player.setY(player.getY() -( screenY - preY ));
+		
+		//不得超过屏幕边界
+		if (player.getX() < -player.getWidth() / 2)
+			player.setX(-player.getWidth() / 2);
+		if (player.getX() > Gdx.graphics.getWidth() - player.getWidth() / 2)
+			player.setX(Gdx.graphics.getWidth() - player.getWidth() / 2);
+		if (player.getY() < 0)
+			player.setY(0);
+		if (player.getY() > Gdx.graphics.getHeight() - player.getHeight())
+			player.setY(Gdx.graphics.getHeight() - player.getHeight());
 		
 		preX = screenX;
 		preY = screenY;

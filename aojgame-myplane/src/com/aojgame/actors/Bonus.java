@@ -5,7 +5,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-
+/**
+ * 双倍子弹和炸弹类
+ * @author aojgame.com
+ *
+ */
 public class Bonus extends Actor{
 
 	public static final	int TYPE_BULLET 		= 0;
@@ -32,7 +36,9 @@ public class Bonus extends Actor{
 		else 
 			batch.draw(Art.UFO_BULLET,  getX(), getY());
 	}
-	
+	/**
+	 * 回收实例并重置
+	 */
 	public void reSet(){
 		type = MathUtils.random(0,1);
 		if (type == TYPE_BOMB)

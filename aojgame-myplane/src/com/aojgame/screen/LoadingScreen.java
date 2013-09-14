@@ -23,12 +23,15 @@ public class LoadingScreen implements Screen{
 	private int			width;
 	private int			height;
 	private float		statetime;
-	private boolean		init;
+	private boolean		init_over;
 	
 	private MyPlane			game;
 	private Stage			stage;
+	//推出按钮
 	private Button			btn_goback;
+	//loading动画
 	private Actor			actor_loading;
+	//欢迎页面
 	private Actor			actor_title;
 	
 	public LoadingScreen(MyPlane game) {
@@ -37,16 +40,18 @@ public class LoadingScreen implements Screen{
 	@Override
 	public void render(float delta) {
 
+		//加载一些资源，并不会马上都加载完
 		Art.update();
 		init();
 		
+		//加载完毕进入欢迎画面，欢迎画面展示一段时间后开始游戏
 	    statetime += Gdx.graphics.getDeltaTime();
-	    if (statetime > 1){
+	    if (statetime > 2){
 	    	game.setScreen(new GameScreen());
 	    	return;
 	    }
 	    	
-	    if (!init){
+	    if (!init_over){
 	    	Gdx.gl.glClearColor(0, 0, 0, 0);
 		    Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 	    }
@@ -65,7 +70,7 @@ public class LoadingScreen implements Screen{
 	@Override
 	public void show() {
 		
-		init	= false;
+		init_over	= false;
 		
 		Art.init();
 		Art.load();
@@ -92,8 +97,9 @@ public class LoadingScreen implements Screen{
 	 * 等待资源加载完毕后进行把成员实例化
 	 */
 	private void init(){
-		if (init)return;
+		if (init_over)return;
 		
+		//异步加载完成后，才可以生成各实例
 		if (Art.isLoaded){
 			actor_title	= new Actor(){
 				public void draw (SpriteBatch batch, float parentAlpha) {
@@ -107,6 +113,7 @@ public class LoadingScreen implements Screen{
 			stage.addActor(actor_title);
 			actor_loading.remove();
 			
+			//退出按钮
 			btn_goback	= new Button(new TextureRegionDrawable(Art.btn_goback) );
 			btn_goback.setPosition(width / 2 ,Art.btn_goback.getRegionHeight());
 			btn_goback.addListener(new InputListener(){
@@ -121,7 +128,7 @@ public class LoadingScreen implements Screen{
 			
 			stage.addActor(btn_goback);
 			Gdx.input.setInputProcessor(stage);
-			init = true;
+			init_over = true;
 		}
 	}
 	
