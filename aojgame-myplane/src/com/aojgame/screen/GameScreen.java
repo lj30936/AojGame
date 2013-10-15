@@ -2,6 +2,8 @@ package com.aojgame.screen;
 
 import java.util.ArrayList;
 
+import javax.swing.text.html.MinimalHTMLWriter;
+
 import com.aojgame.actors.Bonus;
 import com.aojgame.actors.Enemy;
 import com.aojgame.actors.Player;
@@ -9,7 +11,7 @@ import com.aojgame.myplane.Art;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -26,8 +28,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
  */
 public class GameScreen implements Screen, InputProcessor {
 
+	private int width	= Gdx.graphics.getWidth();
+	private int height	= Gdx.graphics.getHeight();
 	//背景移动速度
-	private static final int 	BACKGROUND_MOVE_SPEED 	= 1;
+	private static final int 	BACKGROUND_MOVE_SPEED 	= 2;
 	//最大敌机数量
 	private static final int 	MAX_ENEMY		= 20;
 	//敌机产生基准时间
@@ -62,13 +66,12 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public void render(float delta) {
 
-	    Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-
+	    //Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 	    //暂停的时候inputtime需要增加，以判断是否双击
 	    nowInputTime += delta;
 		
 	    if (player.isOver())
-	    	Gdx.app.exit();
+	    	show();
 	    
 	    if (paused){
 	    	stage.draw();
@@ -94,8 +97,11 @@ public class GameScreen implements Screen, InputProcessor {
 		}
 		//level基准为1，根据得分上浮
 		level = 1f + 0.001f * player.getScore();
-		stage.act();
+		stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+		if (delta > 0.02f)
+		System.out.println("delta " + delta );
 		stage.draw();
+		
 	}
 
 	@Override
@@ -111,7 +117,7 @@ public class GameScreen implements Screen, InputProcessor {
 		btn_pause	= new ImageButton(new TextureRegionDrawable(Art.gamePause), 
 										new TextureRegionDrawable(Art.gamePausePressed));
 		btn_pause.setSize(50, 50);
-		btn_pause.setPosition(10,Gdx.graphics.getHeight() - 50);
+		btn_pause.setPosition(10,height - 50);
 		btn_pause.addListener(new InputListener(){
 			public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
 				paused = !paused;
@@ -145,6 +151,8 @@ public class GameScreen implements Screen, InputProcessor {
 		stage.addActor(player);
 		stage.addActor(bonus);
 		stage.addActor(btn_pause);
+		stage.setCamera(new OrthographicCamera(1f, 1f * height / width));
+		stage.setViewport(width , height , false);
 		
 		Gdx.input.setInputProcessor(this);
 		Gdx.gl.glClearColor(1, 1, 1, 1);
@@ -246,12 +254,12 @@ public class GameScreen implements Screen, InputProcessor {
 		//不得超过屏幕边界
 		if (player.getX() < -player.getWidth() / 2)
 			player.setX(-player.getWidth() / 2);
-		if (player.getX() > Gdx.graphics.getWidth() - player.getWidth() / 2)
-			player.setX(Gdx.graphics.getWidth() - player.getWidth() / 2);
+		if (player.getX() > width - player.getWidth() / 2)
+			player.setX(width - player.getWidth() / 2);
 		if (player.getY() < 0)
 			player.setY(0);
-		if (player.getY() > Gdx.graphics.getHeight() - player.getHeight())
-			player.setY(Gdx.graphics.getHeight() - player.getHeight());
+		if (player.getY() > height - player.getHeight())
+			player.setY(height - player.getHeight());
 		
 		preX = screenX;
 		preY = screenY;

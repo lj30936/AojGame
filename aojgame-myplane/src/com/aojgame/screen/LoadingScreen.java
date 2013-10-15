@@ -5,6 +5,7 @@ import com.aojgame.myplane.MyPlane;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -91,6 +92,8 @@ public class LoadingScreen implements Screen{
 			}
 		};
 		stage.addActor(actor_loading);
+		stage.setCamera(new OrthographicCamera(1f, 1f * height / width));
+		stage.setViewport(width , height , false);
 	}
 
 	/**
@@ -152,7 +155,5 @@ public class LoadingScreen implements Screen{
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-		
 	}
 }
