@@ -1,6 +1,6 @@
 AojGame
 =======
-仿照微信打飞机，使用libgdx实现，在线demo  http://aojgame.sinaapp.com/<br>
+仿照微信打飞机，使用libgdx实现，在线demo  http://lj30936.sinaapp.com/<br>
 <br>
 测试方法：<br>
 1、新建libgdx项目<br>
