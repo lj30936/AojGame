@@ -10,5 +10,3 @@ AojGame
 更新日志：<br>
 2013-10-15<br>
 添加html支持，修复部分bug。html项目请使用GWT编译后部署。<br>
-<br>
-欢迎访问作者博客：http://www.aojgame.com/<br>
