@@ -8,6 +8,7 @@ myplane：仿照微信打飞机，使用libgdx实现<br>
 3、修复简单的报错<br>
 <br>
 smzdm：scrapy项目，抓取smzdm文章的评论<br>
+51credit：scrapy项目，抓取51credit帖子标题及链接<br>
 
 更新日志：<br>
 2020-3-16<br>
