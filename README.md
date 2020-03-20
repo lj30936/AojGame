@@ -1,6 +1,6 @@
 AojGame
 =======
-myplane：仿照微信打飞机，使用libgdx实现<br>
+myplane：仿照微信打飞机，使用<a href="https://libgdx.badlogicgames.com/">libgdx</a>实现<br>
 <br>
 测试方法：<br>
 1、新建libgdx项目<br>
